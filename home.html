@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home</title>
+    <link rel="stylesheet" href="style.css" />
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-app.js";
+      import {
+        getStorage,
+        ref,
+        uploadBytesResumable,
+        getDownloadURL,deleteObject,
+      } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-storage.js";
+      import { getAuth } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-auth.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyABNCVVj3BMKh1OUWFBnK_SabwHi3hAWlM",
+        authDomain: "planjsauth.firebaseapp.com",
+        projectId: "planjsauth",
+        storageBucket: "planjsauth.appspot.com",
+        messagingSenderId: "53472587129",
+        appId: "1:53472587129:web:1439ca3b59af6f0dd453a8",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+        const user = auth.currentUser;
+console.log(user);
+      const storage = getStorage(app);
+
+      //   console.log(user);
+      //   document.getElementById("username").innerText = user.displayName;
+      let abcd = document.getElementById("abcd");
+      abcd.addEventListener("click", (e) => {
+        let getImg = document.getElementById("getImg");
+        let setImg = document.getElementById("setImg").files[0];
+        const filename = `profile/${setImg.name}`;
+        const storageRef = ref(storage, filename);
+        console.log(setImg.name);
+        const uploadTask = uploadBytesResumable(storageRef, setImg);
+        console.log(setImg);
+        uploadTask.on(
+          "state_changed",
+          (snapshot) => {
+            // Observe state change events such as progress, pause, and resume
+            // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+            const progress =
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            console.log("Upload is " + progress + "% done");
+            switch (snapshot.state) {
+              case "paused":
+                console.log("Upload is paused");
+                break;
+              case "running":
+                console.log("Upload is running");
+                break;
+            }
+          },
+          (error) => {
+            // Handle unsuccessful uploads
+            // reject(error);
+            console.log(error);
+          },
+          () => {
+            // Handle successful uploads on complete
+            // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+              getImg.setAttribute("src", `${downloadURL}`);
+              // resolve(downloadURL);
+            });
+          }
+        );
+      });
+    </script>
+  </head>
+
+  <body>
+    <nav>
+      <button id="logout" onclick="window.location.href='index.html'">
+        Logout
+      </button>
+    </nav>
+    <div>
+      <input type="file" name="" id="setImg" />
+      <button id="abcd">check</button>
+    </div>
+    <div id="showData">
+      <img src="" id="getImg" alt="" />
+    </div>
+
+    <script></script>
+  </body>
+</html>

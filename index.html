@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign In</title>
+    <link rel="stylesheet" href="style.css" />
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-app.js";
+      import {
+        getAuth,
+        createUserWithEmailAndPassword,
+        sendEmailVerification,
+        signInWithPopup,
+        GoogleAuthProvider,
+        FacebookAuthProvider,
+      } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-auth.js";
+      import {
+        getDatabase,
+        set,
+        ref,
+        // update,
+      } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-database.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyABNCVVj3BMKh1OUWFBnK_SabwHi3hAWlM",
+        authDomain: "planjsauth.firebaseapp.com",
+        projectId: "planjsauth",
+        storageBucket: "planjsauth.appspot.com",
+        messagingSenderId: "53472587129",
+        appId: "1:53472587129:web:1439ca3b59af6f0dd453a8",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const database = getDatabase(app);
+
+      const provider = new GoogleAuthProvider(app);
+      const providerFB = new FacebookAuthProvider(app);
+
+      let page = location.href.split("/");
+      page = page[page.length - 1];
+
+      let add = document.getElementById("signUp");
+      let google = document.getElementById("google");
+      let facebk = document.getElementById("facebk");
+
+      add.addEventListener("click", (e) => {
+        e.preventDefault();
+        let email = document.getElementById("email").value;
+        let password = document.getElementById("password").value;
+        let userName = document.getElementById("userName").value;
+
+        console.log(email);
+        console.log(password);
+
+        createUserWithEmailAndPassword(auth, email, password)
+          .then((userCredential) => {
+            const user = userCredential.user;
+            // signup in
+
+            console.log("Sign Up");
+            set(ref(database, "users/" + user.uid), {
+              email: email,
+              userName: userName,
+              password: password,
+            });
+            console.log("pocmnh gaya")
+              .then(() => {
+                // Data saved successfully!
+                console.log("Data saved successfully!");
+                window.location.href = "login.html";
+              })
+              .catch((error) => {
+                // The write failed...
+                console.log(error);
+              });
+          })
+          .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.log(errorMessage);
+
+            // ..
+          });
+      });
+
+     /// google
+      google.addEventListener("click", () => {
+        console.log("logggg");
+        signInWithPopup(auth, provider)
+          .then((result) => {
+            const credential = GoogleAuthProvider.credentialFromResult(result);
+            const token = credential.accessToken;
+            // The signed-in user info.
+            const user = result.user;
+            console.log(user);
+            // ...
+            window.location.href = "home.html";
+          })
+          .catch((error) => {
+            // Handle Errors here.
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            const email = error.customData.email;
+            // The AuthCredential type that was used.
+            const credential = GoogleAuthProvider.credentialFromError(error);
+            console.log(errorMessage);
+            // ...
+          });
+      });
+
+      /// facebook
+      facebk.addEventListener("click", () => {
+        console.log("fb");
+        signInWithPopup(auth, providerFB)
+          .then((result) => {
+            const credential =
+              FacebookAuthProvider.credentialFromResult(result);
+            const token = credential.accessToken;
+            // The signed-in user info.
+            const user = result.user;
+            console.log(user);
+            window.location.href = "home.html";
+
+            // ...
+          })
+          .catch((error) => {
+            // Handle Errors here.
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            const email = error.customData.email;
+            // The AuthCredential type that was used.
+            const credential = FacebookAuthProvider.credentialFromError(error);
+            console.log(errorMessage);
+            // ...
+          });
+      });
+    </script>
+  </head>
+
+  <body>
+    <div id="main">
+
+      <h1>Signup</h1>
+      <form>
+      <div>
+        <label for="userName">UserName :</label>
+      <input type="text" id="userName" required placeholder="UserName" />
+      </div>
+      <div><label for="email">Email :</label>
+        <input type="email" id="email" required placeholder="Email" /></div>
+     <div> <label for="password">Password :</label>
+      <input
+      type="password"
+      id="password"
+      required
+      placeholder="Password"
+      /></div>
+      
+      <button type="submit" id="signUp">SignUp</button>
+      <button onclick="window.location.href='login.html'">Login</button>
+    </form>
+    <br>
+    <div class="btngroup">
+    <button id="google">Google</button>
+    <button id="facebk">FaceBook</button>
+    </div>
+  </div>
+  </body>
+</html>

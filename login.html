@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>login</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-app.js";
+      import {
+        getAuth,
+        signInWithEmailAndPassword,
+        signOut,
+        sendPasswordResetEmail,
+      } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-auth.js";
+      // import {
+      //   getDatabase,
+      //   set,
+      //   ref,
+      //   update,
+      // } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-database.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyABNCVVj3BMKh1OUWFBnK_SabwHi3hAWlM",
+        authDomain: "planjsauth.firebaseapp.com",
+        projectId: "planjsauth",
+        storageBucket: "planjsauth.appspot.com",
+        messagingSenderId: "53472587129",
+        appId: "1:53472587129:web:1439ca3b59af6f0dd453a8",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+
+      let login = document.getElementById("login");
+      let loginOut = document.getElementById("logOut");
+      let verify = document.getElementById("verify");
+
+      ///
+      login.addEventListener("click", (e) => {
+        e.preventDefault();
+        let email = document.getElementById("email").value;
+        let password = document.getElementById("password").value;
+
+        signInWithEmailAndPassword(auth, email, password)
+          .then((userCredential) => {
+            const user = userCredential.user;
+            // loged in
+
+            console.log("Sign Up");
+            // set(ref(database, "users/" + user.uid), {
+            //   email: email,
+            //   password: password,
+            // })
+            //   .then(() => {
+            //     // Data saved successfully!
+            //     console.log("Data saved successfully!");
+            //     window.location.href = "login.html";
+            //   })
+            //   .catch((error) => {
+            //     // The write failed...
+            //     console.log(error);
+            //   });
+            window.location.href = "home.html";
+          })
+          .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.log(errorMessage);
+
+            // ..
+          });
+      });
+
+      verify.addEventListener("click", (e) => {
+        e.preventDefault();
+        let verifyEmail = document.getElementById("verifyEmail").value;
+        console.log(verifyEmail);
+        sendPasswordResetEmail(auth, verifyEmail)
+          .then(() => {
+            // Password reset email sent!
+            console.log("forgot");
+            // ..
+          })
+          .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.log(errorMessage);
+            // ..
+          });
+        var modal = document.getElementById("id01");
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function (event) {
+          if (event.target == modal) {
+            modal.style.display = "none";
+          }
+        };
+      });
+
+      ///
+      logOut.addEventListener("click", () => {
+        signOut(auth)
+          .then((res) => {
+            console.log("LogOut");
+            console.log(res);
+            window.location.href = "index.html";
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      });
+    </script>
+  </head>
+  <body>
+    <div id="main">
+
+      <h1>Login</h1>
+      <form>
+        <div><label for="email">Email :</label>
+          <input type="email" id="email" required placeholder="Email" /></div>
+          <div><label for="password">Password :</label>
+            
+            <input
+            type="password"
+            id="password"
+            required
+            placeholder="password"
+            /></div>
+            <div>
+
+              
+              <button type="submit" id="login">Login</button>
+              <button id="logOut">LogOut</button>
+            </div>
+            <button
+            onclick="document.getElementById('id01').style.display='block'"
+            >
+            Forgot
+          </button>
+    </div>
+    </form>
+
+
+    <div id="id01" class="w3-modal">
+      <div class="w3-modal-content w3-animate-zoom form">
+        <div class="w3-center">
+          
+          <span
+            onclick="document.getElementById('id01').style.display='none'"
+            class="w3-button w3-xlarge w3-hover-red w3-display-topright"
+            title="Close Modal"
+            >&times;</span
+          >
+        </div>
+
+        <form class="w3-container">
+          <div class="w3-section">
+            <label for="verifyEmail"><b>Email for Verification</b></label
+            >
+            <input
+              type="email"
+              id="verifyEmail"
+              placeholder="Enter Email"
+              name="email"
+              required
+            />
+            <button type="submit" id="verify">Send</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="index.js"></script>
+  </body>
+</html>
